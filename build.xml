@@ -18,6 +18,7 @@
     <!-- Target:  init -->
     <target name="init">
         <mkdir dir="bin"/>
+        <mkdir dir="doc"/>
     </target>
 
 
@@ -37,6 +38,20 @@
             <classpath refid="ParallelDownloader.classpath"/>
             <compilerarg line="${javac.compilerArg}"/>
         </javac>
+    </target>
+
+
+    <target name="javadoc" depends="build">
+        <javadoc sourcepath="src"
+                 destdir="doc"
+                 verbose="${javac.verbose}"
+                 encoding="${javac.encoding}"
+                 version="true"
+                 author="true"
+                 failonerror="${javac.failOnError}"
+                 source="${javac.source}"
+                 access="private"
+                 classpath="lib"/>
     </target>
 
 
@@ -141,6 +156,7 @@
     <!-- Target:  clean -->
     <target name="clean">
         <delete dir="bin"/>
+        <delete dir="doc"/>
         <delete file="${checkstyle.out}"/>
         <delete file="${findbugs.out}"/>
         <delete file="${pmd.out}"/>
