@@ -12,6 +12,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 
+/**
+ * JPanel that contains the user-configurable options
+ * 
+ * @author Chris Bubernak, Marc Schweikert
+ * @version 1.0
+ *
+ */
 public class ConfigurationPanel extends JPanel implements ActionListener {
 
 
@@ -20,23 +27,30 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
     //////////////////////
 
 
+    /**
+     * Returns Singleton instance
+     * 
+     * @return ConfigurationPanel
+     */
     public static ConfigurationPanel getInstance() {
         return instance;
     }
 
 
-    public void actionPerformed(ActionEvent e) {
+    /**
+     * Method called when any action is performed on this JPanel
+     * 
+     * @param e ActionEvent with event data
+     */
+    public void actionPerformed(final ActionEvent e) {
         // Download button
         if(e.getActionCommand().equals(ACTION_DOWNLOAD)) {
             // let's make sure we have all of the input we need
             if(myURLTextField.getText().equals("")) {
                 myStatusTextField.setText("\"Source URL\" is blank!");
-            }
-            else if(myDestinationFileChooser.getText().equals("")) {
-            //else if(myDestinationTextField.getText().equals("")) {
+            } else if(myDestinationFileChooser.getText().equals("")) {
                 myStatusTextField.setText("\"Destination\" is blank!");
-            }
-            else {
+            } else {
                 // disallow changes while downloading
                 myChunkComboBox.setEnabled(false);
                 myDownloadButton.setEnabled(false);
@@ -64,8 +78,7 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
                         } catch (final Exception ex) {
                             // something went wrong - show we failed
                             updateStatusMessageLater("Download Failed!  " + ex.getMessage());
-                        }
-                        finally {
+                        } finally {
                             // we need to re-enable the buttons no matter what
                             javax.swing.SwingUtilities.invokeLater(new Runnable() {
                                 public void run() {
@@ -77,12 +90,9 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
                     }
                 }).start();
             }
-        }
-        // number of chunks combo box
-        else if(e.getActionCommand().equals(ACTION_NUMCHUNKS)) {
+        } else if(e.getActionCommand().equals(ACTION_NUMCHUNKS)) {
             ProgressPanel.getInstance().setSelectedCard(myChunkComboBox.getSelectedIndex());
-        }
-        else {
+        } else {
             System.err.println("ConfigurationPanel:  I don't know what action just happened!");
         }
     }
@@ -98,6 +108,11 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
     ///////////////////////
 
 
+    /**
+     * Safely update the status message on the GUI thread
+     * 
+     * @param message Message to display on status field
+     */
     private void updateStatusMessageLater(final String message) {
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -106,11 +121,17 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
         });
     }
 
+    /**
+     * Constructor
+     */
     private ConfigurationPanel() {
         this.setLayout(new GridLayout(10, 2));
         addComponentsToPanel();
     }
 
+    /**
+     * Add the components to the JPanel
+     */
     private void addComponentsToPanel() {
         //
         // URL FIELD
@@ -182,21 +203,48 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
     /////////////////////
 
 
-    // Singleton instance
+    /**
+     * Singleton instance
+     */
     private static final ConfigurationPanel instance = new ConfigurationPanel();
 
-    // need these components for the action listener
+    /**
+     * URL Text Field
+     */
     private final JTextField myURLTextField = new JTextField();
-   // private final JTextField myDestinationTextField = new JTextField();
+
+    /**
+     * File chooser
+     */
     private final FileChooserField myDestinationFileChooser = new FileChooserField();
+
+    /**
+     * Number of download chunks drop-down
+     */
     private final JComboBox<Integer> myChunkComboBox = new JComboBox<Integer>();
+
+    /**
+     * Status message
+     */
     private final JTextField myStatusTextField = new JTextField();
+
+    /**
+     * Download button
+     */
     private final JButton myDownloadButton = new JButton("Download");
 
-    // action commands
+    /**
+     * Action command for Download button
+     */
     private static final String ACTION_DOWNLOAD = "action_download";
+
+    /**
+     * Action command for chunk box drop-down
+     */
     private static final String ACTION_NUMCHUNKS = "action_numChunks";
 
-    // not sure what this is, but it causes a warning
-    private static final long serialVersionUID = 1L;
+    /**
+     * Unique serialization ID
+     */
+    private static final long serialVersionUID = 1111111111111111L;
 }

@@ -47,16 +47,13 @@
      -->
 
 
-    <target name="static-analysis" depends="checkstyle,findbugs,pmd"/>
-
-
     <!-- Checkstyle -->
 
 
     <property name="checkstyle.home" value="/opt/COTS/defaults/checkstyle"/>
     <property name="checkstyle.out" value="checkstyle-result.xml"/>
 
-    <target name="checkstyle">
+    <target name="checkstyle" depends="build">
         <taskdef resource="checkstyletask.properties">
             <classpath path="${checkstyle.home}/checkstyle-5.6-all.jar"/>
         </taskdef>
@@ -77,7 +74,7 @@
     <property name="findbugs.home" value="/opt/COTS/defaults/findbugs"/>
     <property name="findbugs.out" value="findbugs-result.xml"/>
 
-    <target name="findbugs">
+    <target name="findbugs" depends="build">
         <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
             <classpath path="${findbugs.home}/lib/findbugs-ant.jar"/>
         </taskdef>
@@ -100,7 +97,7 @@
     <property name="pmd.home" value="/opt/COTS/defaults/pmd"/>
     <property name="pmd.out" value="pmd-result.xml"/>
 
-    <target name="pmd">
+    <target name="pmd" depends="build">
         <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask">
             <classpath>
                 <pathelement location="${pmd.home}/lib/pmd-5.0.0.jar"/>
