@@ -47,6 +47,11 @@
      -->
 
 
+    <target name="static-analysis" depends="build,checkstyle,findbugs,pmd">
+        <echo message="Static Analysis complete!"/>
+    </target>
+
+
     <!-- Checkstyle -->
 
 
