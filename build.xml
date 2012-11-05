@@ -5,6 +5,7 @@
     <property environment="env"/>
     <property file="build.properties"/>
 
+
     <!-- Path -->
     <path id="ParallelDownloader.classpath">
         <pathelement location="bin"/>
@@ -13,10 +14,12 @@
         <pathelement location="lib/httpcore-4.1.4.jar"/>
     </path>
 
+
     <!-- Target:  init -->
     <target name="init">
         <mkdir dir="bin"/>
     </target>
+
 
     <!-- Target:  build -->
     <target depends="init" name="build">
@@ -36,10 +39,111 @@
         </javac>
     </target>
 
+
+    <!--
+              ===============
+              STATIC ANALYSIS
+              ===============
+     -->
+
+
+    <target name="static-analysis" depends="checkstyle,findbugs,pmd"/>
+
+
+    <!-- Checkstyle -->
+
+
+    <property name="checkstyle.home" value="/opt/COTS/defaults/checkstyle"/>
+    <property name="checkstyle.out" value="checkstyle-result.xml"/>
+
+    <target name="checkstyle">
+        <taskdef resource="checkstyletask.properties">
+            <classpath path="${checkstyle.home}/checkstyle-5.6-all.jar"/>
+        </taskdef>
+
+        <checkstyle config="${checkstyle.home}/sun_checks.xml"
+                    failOnViolation="false">
+            <fileset dir="src">
+                <include name="**/*.java"/>
+            </fileset>
+            <formatter type="xml" toFile="${checkstyle.out}"/>
+        </checkstyle>
+    </target>
+
+
+    <!-- FindBugs -->
+
+
+    <property name="findbugs.home" value="/opt/COTS/defaults/findbugs"/>
+    <property name="findbugs.out" value="findbugs-result.xml"/>
+
+    <target name="findbugs">
+        <taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
+            <classpath path="${findbugs.home}/lib/findbugs-ant.jar"/>
+        </taskdef>
+
+        <findbugs home="${findbugs.home}"
+                  effort="max"
+                  output="xml"
+                  outputFile="${findbugs.out}"
+                  sourcepath="src">
+            <fileset dir="bin">
+                <include name="**/*.class"/>
+            </fileset>
+        </findbugs>
+    </target>
+
+
+    <!-- PMD -->
+
+
+    <property name="pmd.home" value="/opt/COTS/defaults/pmd"/>
+    <property name="pmd.out" value="pmd-result.xml"/>
+
+    <target name="pmd">
+        <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask">
+            <classpath>
+                <pathelement location="${pmd.home}/lib/pmd-5.0.0.jar"/>
+                <pathelement location="${pmd.home}/lib/jaxen-1.1.1.jar"/>
+                <pathelement location="${pmd.home}/lib/asm-3.2.jar"/>
+            </classpath>
+        </taskdef>
+
+        <pmd shortFilenames="false">
+            <ruleset>java-basic</ruleset>
+            <ruleset>java-braces</ruleset>
+            <ruleset>java-clone</ruleset>
+            <ruleset>java-codesize</ruleset>
+            <ruleset>java-design</ruleset>
+            <ruleset>java-empty</ruleset>
+            <ruleset>java-finalizers</ruleset>
+            <ruleset>java-imports</ruleset>
+            <ruleset>java-junit</ruleset>
+            <ruleset>java-migrating</ruleset>
+            <ruleset>java-naming</ruleset>
+            <ruleset>java-optimizations</ruleset>
+            <ruleset>java-strictexception</ruleset>
+            <ruleset>java-strings</ruleset>
+            <ruleset>java-sunsecure</ruleset>
+            <ruleset>java-typeresolution</ruleset>
+            <ruleset>java-unnecessary</ruleset>
+            <ruleset>java-unusedcode</ruleset>
+            <formatter type="xml" toFile="${pmd.out}"/>
+            <fileset dir="src">
+                <include name="**/*.java"/>
+            </fileset>
+        </pmd>
+    </target>
+
+
     <!-- Target:  clean -->
     <target name="clean">
         <delete dir="bin"/>
+        <delete file="${checkstyle.out}"/>
+        <delete file="${findbugs.out}"/>
+        <delete file="${pmd.out}"/>
     </target>
+
 
     <!-- Target:  downloader -->
     <target name="downloader" depends="build">
