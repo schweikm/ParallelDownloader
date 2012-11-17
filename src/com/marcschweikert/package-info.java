@@ -1,6 +1,6 @@
 /**
- * Package for all ParallelDownloader code
- * 
+ * Package for all ParallelDownloader code.
+ *
  * @author Chris Bubernak, Marc Schweikert
  * @version 1.0
  */

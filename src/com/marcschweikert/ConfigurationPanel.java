@@ -13,13 +13,68 @@ import javax.swing.JTextField;
 
 
 /**
- * JPanel that contains the user-configurable options
+ * JPanel that contains the user-configurable options.
  * 
  * @author Chris Bubernak, Marc Schweikert
  * @version 1.0
  *
  */
-public class ConfigurationPanel extends JPanel implements ActionListener {
+public final class ConfigurationPanel extends JPanel
+                                      implements ActionListener {
+
+
+    /////////////////////
+    // PRIVATE MEMBERS //
+    /////////////////////
+
+
+    /**
+     * Singleton instance.
+     */
+    private static final ConfigurationPanel instance =
+        new ConfigurationPanel();
+
+    /**
+     * URL Text Field.
+     */
+    private final JTextField myURLTextField = new JTextField();
+
+    /**
+     * File chooser
+     */
+    private final FileChooserField myDestinationFileChooser =
+        new FileChooserField();
+
+    /**
+     * Number of download chunks drop-down.
+     */
+    private final JComboBox<Integer> myChunkComboBox =
+        new JComboBox<Integer>();
+
+    /**
+     * Status message.
+     */
+    private final JTextField myStatusTextField = new JTextField();
+
+    /**
+     * Download button.
+     */
+    private final JButton myDownloadButton = new JButton("Download");
+
+    /**
+     * Action command for Download button.
+     */
+    private static final String ACTION_DOWNLOAD = "action_download";
+
+    /**
+     * Action command for chunk box drop-down.
+     */
+    private static final String ACTION_NUMCHUNKS = "action_numChunks";
+
+    /**
+     * Unique serialization ID.
+     */
+    private static final long serialVersionUID = 1111111111111111L;
 
 
     //////////////////////
@@ -28,8 +83,8 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
 
 
     /**
-     * Returns Singleton instance
-     * 
+     * Returns Singleton instance.
+     *
      * @return ConfigurationPanel
      */
     public static ConfigurationPanel getInstance() {
@@ -38,17 +93,17 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
 
 
     /**
-     * Method called when any action is performed on this JPanel
-     * 
+     * Method called when any action is performed on this JPanel.
+     *
      * @param e ActionEvent with event data
      */
-    public void actionPerformed(final ActionEvent e) {
+    public void actionPerformed(final ActionEvent event) {
         // Download button
-        if(e.getActionCommand().equals(ACTION_DOWNLOAD)) {
+        if(event.getActionCommand().equals(ACTION_DOWNLOAD)) {
             // let's make sure we have all of the input we need
-            if(myURLTextField.getText().equals("")) {
+            if (myURLTextField.getText().equals("")) {
                 myStatusTextField.setText("\"Source URL\" is blank!");
-            } else if(myDestinationFileChooser.getText().equals("")) {
+            } else if (myDestinationFileChooser.getText().equals("")) {
                 myStatusTextField.setText("\"Destination\" is blank!");
             } else {
                 // disallow changes while downloading
@@ -61,26 +116,34 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
                     public void run() {
                         try {
                             final String sourceURL = myURLTextField.getText();
-                            final String destination = myDestinationFileChooser.getText();
-                            final int numChunks = (int)myChunkComboBox.getSelectedItem();
+                            final String destination =
+                                myDestinationFileChooser.getText();
+                            final int numChunks =
+                                (int) myChunkComboBox.getSelectedItem();
 
                             // download the file and time it
                             final long start = System.nanoTime();
 
-                            final ParallelDownloader p = new ParallelDownloader();
-                            p.download(sourceURL, destination, numChunks);
+                            final ParallelDownloader downloader =
+                                new ParallelDownloader();
+                            downloader.download(sourceURL,
+                                                destination,
+                                                numChunks);
 
                             final long end = System.nanoTime();
                             final double totalTime = (end - start) / 1.0e9;
 
                             // update the status field for success
-                            updateStatusMessageLater("Download complete!  Time (seconds): " + totalTime);
+                            updateStatusMessageLater("Download complete!  "
+                                + "Time (seconds): " + totalTime);
                         } catch (final Exception ex) {
                             // something went wrong - show we failed
-                            updateStatusMessageLater("Download Failed!  " + ex.getMessage());
+                            updateStatusMessageLater("Download Failed!  "
+                                + ex.getMessage());
                         } finally {
                             // we need to re-enable the buttons no matter what
-                            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                            javax.swing.SwingUtilities.
+                                invokeLater(new Runnable() {
                                 public void run() {
                                     myChunkComboBox.setEnabled(true);
                                     myDownloadButton.setEnabled(true);
@@ -90,10 +153,11 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
                     }
                 }).start();
             }
-        } else if(e.getActionCommand().equals(ACTION_NUMCHUNKS)) {
-            ProgressPanel.getInstance().setSelectedCard(myChunkComboBox.getSelectedIndex());
+        } else if (event.getActionCommand().equals(ACTION_NUMCHUNKS)) {
+            ProgressPanel.getInstance().
+                setSelectedCard(myChunkComboBox.getSelectedIndex());
         } else {
-            System.err.println("ConfigurationPanel:  I don't know what action just happened!");
+            System.err.println("ConfigurationPanel:  unknown action!");
         }
     }
 
@@ -109,8 +173,8 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
 
 
     /**
-     * Safely update the status message on the GUI thread
-     * 
+     * Safely update the status message on the GUI thread.
+     *
      * @param message Message to display on status field
      */
     private void updateStatusMessageLater(final String message) {
@@ -122,7 +186,7 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
     }
 
     /**
-     * Constructor
+     * Constructor.
      */
     private ConfigurationPanel() {
         this.setLayout(new GridLayout(10, 2));
@@ -130,7 +194,7 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
     }
 
     /**
-     * Add the components to the JPanel
+     * Add the components to the JPanel.
      */
     private void addComponentsToPanel() {
         //
@@ -154,7 +218,8 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
         this.add(numCoresLabel);
 
         final int numCores = Runtime.getRuntime().availableProcessors();
-        final JTextField numCoresTextField = new JTextField(((Integer)numCores).toString());
+        final JTextField numCoresTextField =
+            new JTextField(((Integer) numCores).toString());
         numCoresTextField.setEditable(false);
         this.add(numCoresTextField);
 
@@ -196,55 +261,4 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
         final JLabel filler = new JLabel("");
         this.add(filler);
     }
-
-
-    /////////////////////
-    // PRIVATE MEMBERS //
-    /////////////////////
-
-
-    /**
-     * Singleton instance
-     */
-    private static final ConfigurationPanel instance = new ConfigurationPanel();
-
-    /**
-     * URL Text Field
-     */
-    private final JTextField myURLTextField = new JTextField();
-
-    /**
-     * File chooser
-     */
-    private final FileChooserField myDestinationFileChooser = new FileChooserField();
-
-    /**
-     * Number of download chunks drop-down
-     */
-    private final JComboBox<Integer> myChunkComboBox = new JComboBox<Integer>();
-
-    /**
-     * Status message
-     */
-    private final JTextField myStatusTextField = new JTextField();
-
-    /**
-     * Download button
-     */
-    private final JButton myDownloadButton = new JButton("Download");
-
-    /**
-     * Action command for Download button
-     */
-    private static final String ACTION_DOWNLOAD = "action_download";
-
-    /**
-     * Action command for chunk box drop-down
-     */
-    private static final String ACTION_NUMCHUNKS = "action_numChunks";
-
-    /**
-     * Unique serialization ID
-     */
-    private static final long serialVersionUID = 1111111111111111L;
 }

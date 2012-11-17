@@ -19,13 +19,18 @@ import org.apache.http.params.HttpParams;
 
 
 /**
- * Utility class that downloads parts of a remote file
- * 
+ * Utility class that downloads parts of a remote file.
+ *
  * @author Chris Bubernak, Marc Schweikert
  * @version 1.0
  *
  */
-public class Downloader{
+public final class Downloader{
+
+    /**
+     * Unique serialization ID.
+     */
+    private static final long serialVersionUID = 2222222222222222L;
 
     /**
      * Download a piece of a file
@@ -45,28 +50,31 @@ public class Downloader{
 
         final DefaultHttpClient httpClient = getThreadSafeClient();
         final HttpGet httpGet = new HttpGet(url);
-        httpGet.addHeader("Range", "bytes="+start+"-"+end);
+        httpGet.addHeader("Range", "bytes=" + start + "-" + end);
 
         //try to execute the httpGet request
+        final int totalSize = end - start + 1;
+        final byte[] returnArray = new byte[totalSize];
+
         try {
             final HttpResponse httpResponse = httpClient.execute(httpGet);
-            final int totalSize = (end - start) + 1;
+            
 
             // the maximum transmission unit (MTU) of Ethernet v2
             final int bufSize = 1500;
 
             final byte[] buffer = new byte[bufSize];
-            final byte[] returnArray = new byte[totalSize];
+            
             final InputStream urlStream = httpResponse.getEntity().getContent();
 
             int bytesRead = 0;
             int position = 0;
-            while((bytesRead = urlStream.read(buffer)) != -1) {
+            while ((bytesRead = urlStream.read(buffer)) != -1) {
                 System.arraycopy(buffer, 0, returnArray, position, bytesRead);
                 position += bytesRead;
 
-                final double progress = (double)position / (double)totalSize;
-                final int percent = (int)(progress * 100);
+                final double progress = (double) position / (double) totalSize;
+                final int percent = (int) (progress * 100);
 
                 ProgressPanel.getInstance().updateProgress(chunkIndex, percent);
             }
@@ -83,14 +91,15 @@ public class Downloader{
         } catch (final IOException e) {
             e.printStackTrace();
         }
-        return null;
+
+        return returnArray;
     }
 
 
     /**
      * Have to use this to get a thread safe client instead of just
-     * making a call to DefaultHttpClient constructor
-     * 
+     * making a call to DefaultHttpClient constructor.
+     *
      * @return DefaultHttpClient instance to download with
      */
     private static DefaultHttpClient getThreadSafeClient() {
@@ -98,12 +107,8 @@ public class Downloader{
         final ClientConnectionManager mgr = dummyClient.getConnectionManager();
         final HttpParams params = dummyClient.getParams();
         final DefaultHttpClient client =
-            new DefaultHttpClient(new ThreadSafeClientConnManager(mgr.getSchemeRegistry()), params);
+            new DefaultHttpClient(
+              new ThreadSafeClientConnManager(mgr.getSchemeRegistry()), params);
         return client;
     }
-
-    /**
-     * Unique serialization ID
-     */
-    private static final long serialVersionUID = 2222222222222222L;
 }
