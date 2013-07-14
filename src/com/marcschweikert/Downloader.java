@@ -17,98 +17,95 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 
 import org.apache.http.params.HttpParams;
 
-
 /**
  * Utility class that downloads parts of a remote file.
- *
+ * 
  * @author Chris Bubernak, Marc Schweikert
  * @version 1.0
- *
+ * 
  */
-public final class Downloader{
+public final class Downloader {
 
-    /**
-     * Unique serialization ID.
-     */
-    private static final long serialVersionUID = 2222222222222222L;
+	/**
+	 * Unique serialization ID.
+	 */
+	private static final long serialVersionUID = 2222222222222222L;
 
-    /**
-     * Download a piece of a file
-     * 
-     * @param start start byte number
-     * @param end end byte number
-     * @param url URL of remote file
-     * @param chunkIndex  chunk number used to update progress bar
-     * @return byte array containing file piece
-     * @throws IOException
-     */
-    public static byte[] downloadChunk(final int start,
-                                       final int end,
-                                       final String url,
-                                       final int chunkIndex)
-        throws IOException {
+	/**
+	 * Download a piece of a file
+	 * 
+	 * @param start
+	 *            start byte number
+	 * @param end
+	 *            end byte number
+	 * @param url
+	 *            URL of remote file
+	 * @param chunkIndex
+	 *            chunk number used to update progress bar
+	 * @return byte array containing file piece
+	 * @throws IOException
+	 */
+	public static byte[] downloadChunk(final int start, final int end, final String url, final int chunkIndex)
+			throws IOException {
 
-        final DefaultHttpClient httpClient = getThreadSafeClient();
-        final HttpGet httpGet = new HttpGet(url);
-        httpGet.addHeader("Range", "bytes=" + start + "-" + end);
+		final DefaultHttpClient httpClient = getThreadSafeClient();
+		final HttpGet httpGet = new HttpGet(url);
+		httpGet.addHeader("Range", "bytes=" + start + "-" + end);
 
-        //try to execute the httpGet request
-        final int totalSize = end - start + 1;
-        final byte[] returnArray = new byte[totalSize];
+		// try to execute the httpGet request
+		final int totalSize = end - start + 1;
+		final byte[] returnArray = new byte[totalSize];
 
-        try {
-            final HttpResponse httpResponse = httpClient.execute(httpGet);
-            
+		try {
+			final HttpResponse httpResponse = httpClient.execute(httpGet);
 
-            // the maximum transmission unit (MTU) of Ethernet v2
-            final int bufSize = 1500;
+			// the maximum transmission unit (MTU) of Ethernet v2
+			final int bufSize = 1500;
 
-            final byte[] buffer = new byte[bufSize];
-            
-            final InputStream urlStream = httpResponse.getEntity().getContent();
+			final byte[] buffer = new byte[bufSize];
 
-            int bytesRead = 0;
-            int position = 0;
-            while ((bytesRead = urlStream.read(buffer)) != -1) {
-                System.arraycopy(buffer, 0, returnArray, position, bytesRead);
-                position += bytesRead;
+			final InputStream urlStream = httpResponse.getEntity().getContent();
 
-                final double progress = (double) position / (double) totalSize;
-                final int percent = (int) (progress * 100);
+			int bytesRead = 0;
+			int position = 0;
+			while ((bytesRead = urlStream.read(buffer)) != -1) {
+				System.arraycopy(buffer, 0, returnArray, position, bytesRead);
+				position += bytesRead;
 
-                ProgressPanel.getInstance().updateProgress(chunkIndex, percent);
-            }
+				final double progress = (double) position / (double) totalSize;
+				final int percent = (int) (progress * 100);
 
-            //clean up and shut down
-            httpClient.getConnectionManager().shutdown();
+				ProgressPanel.getInstance().updateProgress(chunkIndex, percent);
+			}
 
-            // make sure the bar is filled - account for rounding error
-            ProgressPanel.getInstance().updateProgress(chunkIndex, 100);
+			// clean up and shut down
+			httpClient.getConnectionManager().shutdown();
 
-            return returnArray;
-        } catch (final ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
+			// make sure the bar is filled - account for rounding error
+			ProgressPanel.getInstance().updateProgress(chunkIndex, 100);
 
-        return returnArray;
-    }
+			return returnArray;
+		} catch (final ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
 
+		return returnArray;
+	}
 
-    /**
-     * Have to use this to get a thread safe client instead of just
-     * making a call to DefaultHttpClient constructor.
-     *
-     * @return DefaultHttpClient instance to download with
-     */
-    private static DefaultHttpClient getThreadSafeClient() {
-        final DefaultHttpClient dummyClient = new DefaultHttpClient();
-        final ClientConnectionManager mgr = dummyClient.getConnectionManager();
-        final HttpParams params = dummyClient.getParams();
-        final DefaultHttpClient client =
-            new DefaultHttpClient(
-              new ThreadSafeClientConnManager(mgr.getSchemeRegistry()), params);
-        return client;
-    }
+	/**
+	 * Have to use this to get a thread safe client instead of just making a
+	 * call to DefaultHttpClient constructor.
+	 * 
+	 * @return DefaultHttpClient instance to download with
+	 */
+	private static DefaultHttpClient getThreadSafeClient() {
+		final DefaultHttpClient dummyClient = new DefaultHttpClient();
+		final ClientConnectionManager mgr = dummyClient.getConnectionManager();
+		final HttpParams params = dummyClient.getParams();
+		final DefaultHttpClient client = new DefaultHttpClient(
+				new ThreadSafeClientConnManager(mgr.getSchemeRegistry()), params);
+		return client;
+	}
 }
