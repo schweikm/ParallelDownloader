@@ -22,14 +22,8 @@ import org.apache.http.params.HttpParams;
  * 
  * @author Chris Bubernak, Marc Schweikert
  * @version 1.0
- * 
  */
 public final class Downloader {
-
-	/**
-	 * Unique serialization ID.
-	 */
-	private static final long serialVersionUID = 2222222222222222L;
 
 	/**
 	 * Download a piece of a file
@@ -43,9 +37,9 @@ public final class Downloader {
 	 * @param chunkIndex
 	 *            chunk number used to update progress bar
 	 * @return byte array containing file piece
-	 * @throws IOException
+	 * @throws IOException Fail to read from stream
 	 */
-	public static byte[] downloadChunk(final int start, final int end, final String url, final int chunkIndex)
+	public static final byte[] downloadChunk(final int start, final int end, final String url, final int chunkIndex)
 			throws IOException {
 
 		final DefaultHttpClient httpClient = getThreadSafeClient();
@@ -55,16 +49,13 @@ public final class Downloader {
 		// try to execute the httpGet request
 		final int totalSize = end - start + 1;
 		final byte[] returnArray = new byte[totalSize];
-
-		try {
-			final HttpResponse httpResponse = httpClient.execute(httpGet);
+		final HttpResponse httpResponse = httpClient.execute(httpGet);
+		try (final InputStream urlStream = httpResponse.getEntity().getContent();) {
 
 			// the maximum transmission unit (MTU) of Ethernet v2
 			final int bufSize = 1500;
 
 			final byte[] buffer = new byte[bufSize];
-
-			final InputStream urlStream = httpResponse.getEntity().getContent();
 
 			int bytesRead = 0;
 			int position = 0;
@@ -100,7 +91,7 @@ public final class Downloader {
 	 * 
 	 * @return DefaultHttpClient instance to download with
 	 */
-	private static DefaultHttpClient getThreadSafeClient() {
+	private static final DefaultHttpClient getThreadSafeClient() {
 		final DefaultHttpClient dummyClient = new DefaultHttpClient();
 		final ClientConnectionManager mgr = dummyClient.getConnectionManager();
 		final HttpParams params = dummyClient.getParams();

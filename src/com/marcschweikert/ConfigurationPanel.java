@@ -1,7 +1,6 @@
 package com.marcschweikert;
 
 import java.awt.GridLayout;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -10,85 +9,53 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 /**
  * JPanel that contains the user-configurable options.
  * 
  * @author Chris Bubernak, Marc Schweikert
  * @version 1.0
- * 
  */
 public final class ConfigurationPanel extends JPanel implements ActionListener {
 
-	// ///////////////////
-	// PRIVATE MEMBERS //
-	// ///////////////////
+	/** Unique serialization ID */
+	private static final long serialVersionUID = 7755865066385083534L;
 
-	/**
-	 * Singleton instance.
-	 */
+	/** Singleton instance */
 	private static final ConfigurationPanel instance = new ConfigurationPanel();
 
-	/**
-	 * URL Text Field.
-	 */
+	/** URL Text Field */
 	private final JTextField myURLTextField = new JTextField();
 
-	/**
-	 * File chooser
-	 */
+	/** File chooser */
 	private final FileChooserField myDestinationFileChooser = new FileChooserField();
 
-	/**
-	 * Number of download chunks drop-down.
-	 */
+	/** Number of download chunks drop-down */
 	private final JComboBox<Integer> myChunkComboBox = new JComboBox<Integer>();
 
-	/**
-	 * Status message.
-	 */
+	/** Status message */
 	private final JTextField myStatusTextField = new JTextField();
 
-	/**
-	 * Download button.
-	 */
+	/** Download button */
 	private final JButton myDownloadButton = new JButton("Download");
 
-	/**
-	 * Action command for Download button.
-	 */
+	/** Action command for Download button */
 	private static final String ACTION_DOWNLOAD = "action_download";
 
-	/**
-	 * Action command for chunk box drop-down.
-	 */
+	/** Action command for chunk box drop-down */
 	private static final String ACTION_NUMCHUNKS = "action_numChunks";
 
-	/**
-	 * Unique serialization ID.
-	 */
-	private static final long serialVersionUID = 1111111111111111L;
-
-	// ////////////////////
-	// PUBLIC INTERFACE //
-	// ////////////////////
 
 	/**
-	 * Returns Singleton instance.
-	 * 
-	 * @return ConfigurationPanel
+	 * @return Singleton instance
 	 */
-	public static ConfigurationPanel getInstance() {
+	public static final ConfigurationPanel getInstance() {
 		return instance;
 	}
 
-	/**
-	 * Method called when any action is performed on this JPanel.
-	 * 
-	 * @param e
-	 *            ActionEvent with event data
-	 */
-	public void actionPerformed(final ActionEvent event) {
+	@Override
+	public final void actionPerformed(final ActionEvent event) {
 		// Download button
 		if (event.getActionCommand().equals(ACTION_DOWNLOAD)) {
 			// let's make sure we have all of the input we need
@@ -104,17 +71,17 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 
 				// start the download in a new thread to free the GUI
 				new Thread(new Runnable() {
+					@Override
 					public void run() {
 						try {
 							final String sourceURL = myURLTextField.getText();
 							final String destination = myDestinationFileChooser.getText();
-							final int numChunks = (int) myChunkComboBox.getSelectedItem();
+							final int numChunks = ((Integer)myChunkComboBox.getSelectedItem()).intValue();
 
 							// download the file and time it
 							final long start = System.nanoTime();
 
-							final ParallelDownloader downloader = new ParallelDownloader();
-							downloader.download(sourceURL, destination, numChunks);
+							ParallelDownloader.download(sourceURL, destination, numChunks);
 
 							final long end = System.nanoTime();
 							final double totalTime = (end - start) / 1.0e9;
@@ -127,6 +94,7 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 						} finally {
 							// we need to re-enable the buttons no matter what
 							javax.swing.SwingUtilities.invokeLater(new Runnable() {
+								@Override
 								public void run() {
 									myChunkComboBox.setEnabled(true);
 									myDownloadButton.setEnabled(true);
@@ -143,22 +111,14 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 		}
 	}
 
-	// ///////////////////////
-	// PROTECTED INTERFACE //
-	// ///////////////////////
-
-	// /////////////////////
-	// PRIVATE INTERFACE //
-	// /////////////////////
-
 	/**
 	 * Safely update the status message on the GUI thread.
 	 * 
-	 * @param message
-	 *            Message to display on status field
+	 * @param message Message to display on status field
 	 */
-	private void updateStatusMessageLater(final String message) {
+	private final void updateStatusMessageLater(final String message) {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				myStatusTextField.setText(message);
 			}
@@ -166,7 +126,7 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * Constructor.
+	 * Create the GUI components.
 	 */
 	private ConfigurationPanel() {
 		this.setLayout(new GridLayout(10, 2));
@@ -176,7 +136,7 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 	/**
 	 * Add the components to the JPanel.
 	 */
-	private void addComponentsToPanel() {
+	private final void addComponentsToPanel() {
 		//
 		// URL FIELD
 		//
@@ -198,7 +158,7 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 		this.add(numCoresLabel);
 
 		final int numCores = Runtime.getRuntime().availableProcessors();
-		final JTextField numCoresTextField = new JTextField(((Integer) numCores).toString());
+		final JTextField numCoresTextField = new JTextField(Integer.valueOf(numCores).toString());
 		numCoresTextField.setEditable(false);
 		this.add(numCoresTextField);
 
@@ -208,10 +168,10 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 		final JLabel numChunksLabel = new JLabel("Number of Chunks");
 		this.add(numChunksLabel);
 
-		myChunkComboBox.addItem(1);
-		myChunkComboBox.addItem(2);
-		myChunkComboBox.addItem(4);
-		myChunkComboBox.addItem(8);
+		myChunkComboBox.addItem(Integer.valueOf(1));
+		myChunkComboBox.addItem(Integer.valueOf(2));
+		myChunkComboBox.addItem(Integer.valueOf(4));
+		myChunkComboBox.addItem(Integer.valueOf(8));
 		myChunkComboBox.setSelectedIndex(0);
 		myChunkComboBox.setActionCommand(ACTION_NUMCHUNKS);
 		myChunkComboBox.addActionListener(this);
@@ -229,7 +189,7 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 		//
 		myStatusTextField.setText("System Ready");
 		myStatusTextField.setEditable(false);
-		myStatusTextField.setHorizontalAlignment(JTextField.CENTER);
+		myStatusTextField.setHorizontalAlignment(SwingConstants.CENTER);
 		this.add(myStatusTextField);
 
 		// this makes the widgets arrange correctly

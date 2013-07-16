@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -24,14 +23,8 @@ import java.util.concurrent.TimeUnit;
  * 
  * @author Chris Bubernak, Marc Schweikert
  * @version 1.0
- * 
  */
 public final class ParallelDownloader {
-
-	/**
-	 * Unique serialization ID.
-	 */
-	private static final long serialVersionUID = 5555555555555555L;
 
 	/**
 	 * Download the file.
@@ -43,10 +36,13 @@ public final class ParallelDownloader {
 	 * @param numChunks
 	 *            Number of parallel chunks to download
 	 * @throws InterruptedException
+	 *             Thread interrupted
 	 * @throws ExecutionException
+	 *             Thread exception
 	 * @throws IOException
+	 *             Cannot open URL
 	 */
-	public void download(final String urlString, final String destinationFile, final int numChunks)
+	public static final void download(final String urlString, final String destinationFile, final int numChunks)
 			throws InterruptedException, ExecutionException, IOException {
 		// let's calculate the file size
 		final URL sourceURL = new URL(urlString);
@@ -71,6 +67,7 @@ public final class ParallelDownloader {
 					* (finalI + 1) - 1);
 
 			partitions.add(new Callable<byte[]>() {
+				@Override
 				public byte[] call() {
 					byte[] bytes = null;
 					try {
@@ -107,19 +104,16 @@ public final class ParallelDownloader {
 			executorPool.shutdown();
 		}
 
-		try {
-			// if they just selected a folder call the new file output
-			// and put it in that folder
-			final File file = new File(destinationFile);
-			String destFile = destinationFile;
-			if (file.isDirectory()) {
-				destFile += "/" + urlString.substring(urlString.lastIndexOf('/'));
-			}
+		// if they just selected a folder call the new file output
+		// and put it in that folder
+		final File file = new File(destinationFile);
+		String destFile = destinationFile;
+		if (file.isDirectory()) {
+			destFile += "/" + urlString.substring(urlString.lastIndexOf('/'));
+		}
 
-			final FileOutputStream fos = new FileOutputStream(destFile);
-
+		try (final FileOutputStream fos = new FileOutputStream(destFile);) {
 			fos.write(finalByteArray);
-			fos.close();
 		} catch (final FileNotFoundException ex) {
 			System.out.println("FileNotFoundException : " + ex);
 		} catch (final IOException ioe) {

@@ -15,49 +15,17 @@ import javax.swing.UnsupportedLookAndFeelException;
  * 
  * @author Chris Bubernak, Marc Schweikert
  * @version 1.0
- * 
  */
 public final class MainPanelGUI {
 
-	// ///////////////////
-	// PRIVATE MEMBERS //
-	// ///////////////////
-
-	/**
-	 * Main JPanel.
-	 */
+	/** Main JPanel */
 	private final JPanel mainPanel = new JPanel();
 
 	/**
 	 * Specify the look and feel to use. Valid values: null (use the default),
 	 * "Metal", "System", "Motif", "GTK+"
 	 */
-	private final static String LOOKANDFEEL = "Metal";
-
-	/**
-	 * Unique serialization ID.
-	 */
-	private static final long serialVersionUID = 4444444444444444L;
-
-	// ////////////////////
-	// PUBLIC INTERFACE //
-	// ////////////////////
-
-	/**
-	 * Main.
-	 * 
-	 * @param args
-	 *            command line arguments
-	 */
-	public static void main(final String[] args) {
-		// Schedule a job for the event-dispatching thread:
-		// creating and showing this application's GUI.
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				new MainPanelGUI().createAndShowGUI();
-			}
-		});
-	}
+	private static final String LOOKANDFEEL = "Metal";
 
 	/**
 	 * Constructor.
@@ -74,18 +42,10 @@ public final class MainPanelGUI {
 		mainPanel.add(Box.createGlue());
 	}
 
-	// ///////////////////////
-	// PROTECTED INTERFACE //
-	// ///////////////////////
-
-	// /////////////////////
-	// PRIVATE INTERFACE //
-	// /////////////////////
-
 	/**
 	 * Specify the theme to display.
 	 */
-	private void initLookAndFeel() {
+	private static final void initLookAndFeel() {
 		String lookAndFeel = null;
 
 		if (LOOKANDFEEL != null) {
@@ -122,7 +82,7 @@ public final class MainPanelGUI {
 	/**
 	 * Add widgets to the main panel and display to the user.
 	 */
-	private void createAndShowGUI() {
+	public final void createAndShowGUI() {
 		// Set the look and feel.
 		initLookAndFeel();
 
@@ -132,9 +92,8 @@ public final class MainPanelGUI {
 		frame.setPreferredSize(new Dimension(1250, 500));
 
 		// Create and set up the content pane.
-		final MainPanelGUI gui = new MainPanelGUI();
-		gui.mainPanel.setOpaque(true); // content panes must be opaque
-		frame.setContentPane(gui.mainPanel);
+		mainPanel.setOpaque(true); // content panes must be opaque
+		frame.setContentPane(mainPanel);
 
 		// Display the window.
 		frame.pack();

@@ -15,32 +15,17 @@ import javax.swing.JTextField;
  * 
  * @author Chris Bubernak, Marc Schweikert
  * @version 1.0
- * 
  */
-public class FileChooserField extends JPanel {
+public final class FileChooserField extends JPanel {
 
-	// ///////////////////
-	// PRIVATE MEMBERS //
-	// ///////////////////
+	/** Unique serialization ID */
+	private static final long serialVersionUID = 7766098917455853586L;
 
-	/**
-	 * Unique serialization ID.
-	 */
-	private static final long serialVersionUID = 3333333333333333L;
-
-	/**
-	 * Text field for file destination.
-	 */
+	/** Text field for file destination */
 	private JTextField destinationTextField;
 
-	/**
-	 * JFileChooser instance.
-	 */
+	/** JFileChooser instance */
 	private JFileChooser fileChooser;
-
-	// ////////////////////
-	// PUBLIC INTERFACE //
-	// ////////////////////
 
 	/**
 	 * Constructor.
@@ -51,6 +36,7 @@ public class FileChooserField extends JPanel {
 		destinationTextField = new JTextField();
 		destinationTextField.addMouseListener(new MouseAdapter() {
 			// on mouse click pull up the file chooser
+			@Override
 			public void mouseClicked(MouseEvent event) {
 				final int returnVal = fileChooser.showOpenDialog(FileChooserField.this);
 
@@ -75,15 +61,7 @@ public class FileChooserField extends JPanel {
 	/**
 	 * @return File destination.
 	 */
-	public String getText() {
+	public final String getText() {
 		return destinationTextField.getText();
 	}
-
-	// ///////////////////////
-	// PROTECTED INTERFACE //
-	// ///////////////////////
-
-	// /////////////////////
-	// PRIVATE INTERFACE //
-	// /////////////////////
 }

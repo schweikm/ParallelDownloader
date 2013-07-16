@@ -178,7 +178,7 @@
 
 	<!-- Target:  downloader -->
 	<target name="downloader" depends="build">
-		<java classname="com.marcschweikert.MainPanelGUI" failonerror="true" fork="yes">
+		<java classname="com.marcschweikert.ParallelDownloaderMain" failonerror="true" fork="yes">
 			<classpath refid="ParallelDownloader.classpath"/>
 		</java>
 	</target>

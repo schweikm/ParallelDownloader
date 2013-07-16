@@ -18,92 +18,55 @@ import javax.swing.JProgressBar;
  * 
  * @author Chris Bubernak, Marc Schweikert
  * @version 1.0
- * 
  */
 public final class ProgressPanel extends JPanel {
 
-	// ///////////////////
-	// PRIVATE MEMBERS //
-	// ///////////////////
+	/** Unique serialization ID */
+	private static final long serialVersionUID = 6766814350912891511L;
 
-	/**
-	 * Singleton instance.
-	 */
+	/** Singleton instance */
 	private static final ProgressPanel instance = new ProgressPanel();
 
-	/**
-	 * Unique serialization ID.
-	 */
-	private static final long serialVersionUID = 6666666666666666L;
-
-	/**
-	 * JPanel for the CardLayout.
-	 */
+	/** JPanel for the CardLayout */
 	private final JPanel myCardPanel = new JPanel(new CardLayout());
 
-	/**
-	 * Description for 1 download chunk.
-	 */
+	/** Description for 1 download chunk */
 	private static final String CARD_CHUNK1 = "Download with 1 chunk";
 
-	/**
-	 * Description for 2 download chunks.
-	 */
+	/** Description for 2 download chunks */
 	private static final String CARD_CHUNK2 = "Download with 2 chunks";
 
-	/**
-	 * Description for 4 download chunks.
-	 */
+	/** Description for 4 download chunks */
 	private static final String CARD_CHUNK4 = "Download with 4 chunks";
 
-	/**
-	 * Description for 8 download chunks.
-	 */
+	/** Description for 8 download chunks */
 	private static final String CARD_CHUNK8 = "Download with 8 chunks";
 
-	/**
-	 * List for 1 download chunk.
-	 */
+	/** List for 1 download chunk */
 	private final ArrayList<JProgressBar> myCard1Bars = new ArrayList<JProgressBar>();
 
-	/**
-	 * List for 2 download chunks.
-	 */
+	/** List for 2 download chunks */
 	private final ArrayList<JProgressBar> myCard2Bars = new ArrayList<JProgressBar>();
 
-	/**
-	 * List for 4 download chunks.
-	 */
+	/** List for 4 download chunks */
 	private final ArrayList<JProgressBar> myCard3Bars = new ArrayList<JProgressBar>();
 
-	/**
-	 * List for 8 download chunks.
-	 */
+	/** List for 8 download chunks */
 	private final ArrayList<JProgressBar> myCard4Bars = new ArrayList<JProgressBar>();
 
-	/**
-	 * List of all JProgressBar Lists.
-	 */
+	/** List of all JProgressBar Lists */
 	private final ArrayList<ArrayList<JProgressBar>> myBarList = new ArrayList<ArrayList<JProgressBar>>();
 
-	/**
-	 * Index of currently selected card.
-	 */
+	/** Index of currently selected card */
 	private int myCardIndex;
 
-	/**
-	 * Lock for thread-safe access.
-	 */
+	/** Lock for thread-safe access */
 	private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
-
-	// ////////////////////
-	// PUBLIC INTERFACE //
-	// ////////////////////
 
 	/**
 	 * @return Singleton instance.
 	 */
-	public static ProgressPanel getInstance() {
+	public static final ProgressPanel getInstance() {
 		return instance;
 	}
 
@@ -117,7 +80,7 @@ public final class ProgressPanel extends JPanel {
 	 * @param selectedIndex
 	 *            index of CardLayout to display
 	 */
-	public void setSelectedCard(final int selectedIndex) {
+	public final void setSelectedCard(final int selectedIndex) {
 		final CardLayout layout = (CardLayout) (myCardPanel.getLayout());
 		myCardIndex = selectedIndex;
 
@@ -148,7 +111,7 @@ public final class ProgressPanel extends JPanel {
 	 * @param amount
 	 *            amount between 0 and 100 (percent)
 	 */
-	public void updateProgress(final int index, final int amount) {
+	public final void updateProgress(final int index, final int amount) {
 		final int lowerBound = 0;
 		final int upperBound = (int) (Math.pow(2, myCardIndex));
 
@@ -169,14 +132,6 @@ public final class ProgressPanel extends JPanel {
 		rwLock.writeLock().unlock();
 	}
 
-	// ///////////////////////
-	// PROTECTED INTERFACE //
-	// ///////////////////////
-
-	// /////////////////////
-	// PRIVATE INTERFACE //
-	// /////////////////////
-
 	/**
 	 * Constructor.
 	 */
@@ -188,7 +143,7 @@ public final class ProgressPanel extends JPanel {
 	/**
 	 * Add the widgets to the JPanel.
 	 */
-	private void addComponentToPanel() {
+	private final void addComponentToPanel() {
 		createProgressBar(myCard1Bars, 1, CARD_CHUNK1);
 		createProgressBar(myCard2Bars, 2, CARD_CHUNK2);
 		createProgressBar(myCard3Bars, 4, CARD_CHUNK4);
@@ -208,7 +163,7 @@ public final class ProgressPanel extends JPanel {
 	 * @param description
 	 *            String to display
 	 */
-	private void createProgressBar(final ArrayList<JProgressBar> barList, final int numBars, final String description) {
+	private final void createProgressBar(final ArrayList<JProgressBar> barList, final int numBars, final String description) {
 
 		// create the container layout
 		final JPanel cardPanel = new JPanel();
