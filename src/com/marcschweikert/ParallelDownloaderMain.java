@@ -2,19 +2,19 @@ package com.marcschweikert;
 
 /**
  * Main class.
- * 
+ *
  * @author Chris Bubernak, Marc Schweikert
  * @version 1.0
  */
 public final class ParallelDownloaderMain {
 
 	/**
-	 * Main.
-	 * 
+	 * Main
+	 *
 	 * @param args
 	 *            command line arguments
 	 */
-	public static final void main(String[] args) {
+	public static void main(final String[] args) {
 		// Schedule a job for the event-dispatching thread:
 		// creating and showing this application's GUI.
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -25,4 +25,9 @@ public final class ParallelDownloaderMain {
 			}
 		});
 	}
+
+	/**
+	 * Utility class - private constructor
+	 */
+	private ParallelDownloaderMain() { }
 }

@@ -13,7 +13,7 @@ import javax.swing.SwingConstants;
 
 /**
  * JPanel that contains the user-configurable options.
- * 
+ *
  * @author Chris Bubernak, Marc Schweikert
  * @version 1.0
  */
@@ -23,7 +23,7 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 7755865066385083534L;
 
 	/** Singleton instance */
-	private static final ConfigurationPanel instance = new ConfigurationPanel();
+	private static ConfigurationPanel instance;
 
 	/** URL Text Field */
 	private final JTextField myURLTextField = new JTextField();
@@ -46,11 +46,13 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 	/** Action command for chunk box drop-down */
 	private static final String ACTION_NUMCHUNKS = "action_numChunks";
 
-
 	/**
 	 * @return Singleton instance
 	 */
 	public static final ConfigurationPanel getInstance() {
+		if (null == instance) {
+			instance = new ConfigurationPanel();
+		}
 		return instance;
 	}
 
@@ -76,7 +78,7 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 						try {
 							final String sourceURL = myURLTextField.getText();
 							final String destination = myDestinationFileChooser.getText();
-							final int numChunks = ((Integer)myChunkComboBox.getSelectedItem()).intValue();
+							final int numChunks = ((Integer) myChunkComboBox.getSelectedItem()).intValue();
 
 							// download the file and time it
 							final long start = System.nanoTime();
@@ -114,7 +116,8 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 	/**
 	 * Safely update the status message on the GUI thread.
 	 * 
-	 * @param message Message to display on status field
+	 * @param message
+	 *            Message to display on status field
 	 */
 	private final void updateStatusMessageLater(final String message) {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
