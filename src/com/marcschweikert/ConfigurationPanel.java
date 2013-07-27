@@ -3,6 +3,10 @@ package com.marcschweikert;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -13,7 +17,7 @@ import javax.swing.SwingConstants;
 
 /**
  * JPanel that contains the user-configurable options.
- *
+ * 
  * @author Chris Bubernak, Marc Schweikert
  * @version 1.0
  */
@@ -23,13 +27,13 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 7755865066385083534L;
 
 	/** Singleton instance. */
-	private static ConfigurationPanel instance;
+	private static volatile ConfigurationPanel instance;
 
 	/** URL Text Field. */
 	private final JTextField myURLTextField = new JTextField();
 
 	/** File chooser. */
-	private final FileChooserField myDestinationFileChooser = new FileChooserField();
+	private final FileChooserField myDestFileChooser = new FileChooserField();
 
 	/** Number of download chunks drop-down. */
 	private final JComboBox<Integer> myChunkComboBox = new JComboBox<Integer>();
@@ -46,12 +50,28 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 	/** Action command for chunk box drop-down. */
 	private static final String ACTION_NUMCHUNKS = "action_numChunks";
 
+	/** Change nanoseconds to seconds. */
+	private static final double NANO_OFFSET = 1.0e9;
+
+	/** Number of rows to show. */
+	private static final int NUM_ROWS = 10;
+
+	/** Number of columns to show. */
+	private static final int NUM_COLUMNS = 2;
+
+	/** List of allowable chunk sizes. */
+	private static final List<Integer> myChunkSizeList = new ArrayList<Integer>();
+
 	/**
 	 * @return Singleton instance.
 	 */
 	public static ConfigurationPanel getInstance() {
 		if (null == instance) {
-			instance = new ConfigurationPanel();
+			synchronized (ConfigurationPanel.class) {
+				if (null == instance) {
+					instance = new ConfigurationPanel();
+				}
+			}
 		}
 		return instance;
 	}
@@ -63,7 +83,7 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 			// let's make sure we have all of the input we need
 			if (myURLTextField.getText().equals("")) {
 				myStatusTextField.setText("\"Source URL\" is blank!");
-			} else if (myDestinationFileChooser.getText().equals("")) {
+			} else if (myDestFileChooser.getText().equals("")) {
 				myStatusTextField.setText("\"Destination\" is blank!");
 			} else {
 				// disallow changes while downloading
@@ -77,7 +97,7 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 					public void run() {
 						try {
 							final String sourceURL = myURLTextField.getText();
-							final String destination = myDestinationFileChooser.getText();
+							final String destination = myDestFileChooser.getText();
 							final int numChunks = ((Integer) myChunkComboBox.getSelectedItem()).intValue();
 
 							// download the file and time it
@@ -86,12 +106,15 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 							ParallelDownloader.download(sourceURL, destination, numChunks);
 
 							final long end = System.nanoTime();
-							final double totalTime = (end - start) / 1.0e9;
+							final double totalTime = (end - start) / NANO_OFFSET;
 
 							// update the status field for success
 							updateStatusMessageLater("Download complete!  " + "Time (seconds): " + totalTime);
-						} catch (final Exception ex) {
-							// something went wrong - show we failed
+						} catch (final ExecutionException ex) {
+							updateStatusMessageLater("Download Failed!  " + ex.getMessage());
+						} catch (final InterruptedException ex) {
+							updateStatusMessageLater("Download Failed!  " + ex.getMessage());
+						} catch (final IOException ex) {
 							updateStatusMessageLater("Download Failed!  " + ex.getMessage());
 						} finally {
 							// we need to re-enable the buttons no matter what
@@ -116,8 +139,7 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 	/**
 	 * Safely update the status message on the GUI thread.
 	 * 
-	 * @param message
-	 *            Message to display on status field
+	 * @param message Message to display on status field
 	 */
 	private void updateStatusMessageLater(final String message) {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -132,7 +154,11 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 	 * Create the GUI components.
 	 */
 	private ConfigurationPanel() {
-		this.setLayout(new GridLayout(10, 2));
+		this.setLayout(new GridLayout(NUM_ROWS, NUM_COLUMNS));
+		myChunkSizeList.add(Integer.valueOf(1));
+		myChunkSizeList.add(Integer.valueOf(2));
+		myChunkSizeList.add(Integer.valueOf(4));
+		myChunkSizeList.add(Integer.valueOf(8));
 		addComponentsToPanel();
 	}
 
@@ -152,7 +178,7 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 		//
 		final JLabel fileChooserLabel = new JLabel("Destination");
 		this.add(fileChooserLabel);
-		this.add(myDestinationFileChooser);
+		this.add(myDestFileChooser);
 
 		//
 		// NUMBER OF CORES
@@ -171,10 +197,10 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 		final JLabel numChunksLabel = new JLabel("Number of Chunks");
 		this.add(numChunksLabel);
 
-		myChunkComboBox.addItem(Integer.valueOf(1));
-		myChunkComboBox.addItem(Integer.valueOf(2));
-		myChunkComboBox.addItem(Integer.valueOf(4));
-		myChunkComboBox.addItem(Integer.valueOf(8));
+		for (final Integer value : myChunkSizeList) {
+			myChunkComboBox.addItem(value);
+		}
+
 		myChunkComboBox.setSelectedIndex(0);
 		myChunkComboBox.setActionCommand(ACTION_NUMCHUNKS);
 		myChunkComboBox.addActionListener(this);

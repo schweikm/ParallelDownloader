@@ -13,7 +13,7 @@ import org.apache.http.conn.ClientConnectionManager;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 
 import org.apache.http.params.HttpParams;
 
@@ -28,14 +28,10 @@ public final class Downloader {
 	/**
 	 * Download a piece of a file
 	 * 
-	 * @param start
-	 *            start byte number
-	 * @param end
-	 *            end byte number
-	 * @param url
-	 *            URL of remote file
-	 * @param chunkIndex
-	 *            chunk number used to update progress bar
+	 * @param start start byte number
+	 * @param end end byte number
+	 * @param url URL of remote file
+	 * @param chunkIndex chunk number used to update progress bar
 	 * @return byte array containing file piece
 	 * @throws IOException Fail to read from stream
 	 */
@@ -86,8 +82,7 @@ public final class Downloader {
 	}
 
 	/**
-	 * Have to use this to get a thread safe client instead of just making a
-	 * call to DefaultHttpClient constructor.
+	 * Have to use this to get a thread safe client instead of just making a call to DefaultHttpClient constructor.
 	 * 
 	 * @return DefaultHttpClient instance to download with
 	 */
@@ -95,8 +90,8 @@ public final class Downloader {
 		final DefaultHttpClient dummyClient = new DefaultHttpClient();
 		final ClientConnectionManager mgr = dummyClient.getConnectionManager();
 		final HttpParams params = dummyClient.getParams();
-		final DefaultHttpClient client = new DefaultHttpClient(
-				new ThreadSafeClientConnManager(mgr.getSchemeRegistry()), params);
+		final DefaultHttpClient client = new DefaultHttpClient(new PoolingClientConnectionManager(
+				mgr.getSchemeRegistry()), params);
 		return client;
 	}
 }

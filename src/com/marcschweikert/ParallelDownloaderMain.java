@@ -2,7 +2,7 @@ package com.marcschweikert;
 
 /**
  * Main class.
- *
+ * 
  * @author Chris Bubernak, Marc Schweikert
  * @version 1.0
  */
@@ -10,9 +10,8 @@ public final class ParallelDownloaderMain {
 
 	/**
 	 * Main
-	 *
-	 * @param args
-	 *            command line arguments
+	 * 
+	 * @param args command line arguments
 	 */
 	public static void main(final String[] args) {
 		// Schedule a job for the event-dispatching thread:
@@ -29,5 +28,6 @@ public final class ParallelDownloaderMain {
 	/**
 	 * Utility class - private constructor
 	 */
-	private ParallelDownloaderMain() { }
+	private ParallelDownloaderMain() {
+	}
 }

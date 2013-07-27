@@ -29,18 +29,12 @@ public final class ParallelDownloader {
 	/**
 	 * Download the file.
 	 * 
-	 * @param urlString
-	 *            remote file to download
-	 * @param destinationFile
-	 *            local file to store
-	 * @param numChunks
-	 *            Number of parallel chunks to download
-	 * @throws InterruptedException
-	 *             Thread interrupted
-	 * @throws ExecutionException
-	 *             Thread exception
-	 * @throws IOException
-	 *             Cannot open URL
+	 * @param urlString remote file to download
+	 * @param destinationFile local file to store
+	 * @param numChunks Number of parallel chunks to download
+	 * @throws InterruptedException Thread interrupted
+	 * @throws ExecutionException Thread exception
+	 * @throws IOException Cannot open URL
 	 */
 	public static final void download(final String urlString, final String destinationFile, final int numChunks)
 			throws InterruptedException, ExecutionException, IOException {

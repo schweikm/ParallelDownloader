@@ -77,8 +77,7 @@ public final class ProgressPanel extends JPanel {
 	/**
 	 * Shows the card with the given index.
 	 * 
-	 * @param selectedIndex
-	 *            index of CardLayout to display
+	 * @param selectedIndex index of CardLayout to display
 	 */
 	public final void setSelectedCard(final int selectedIndex) {
 		final CardLayout layout = (CardLayout) (myCardPanel.getLayout());
@@ -106,10 +105,8 @@ public final class ProgressPanel extends JPanel {
 	/**
 	 * Update the progress bars on the ProgressPanel.
 	 * 
-	 * @param index
-	 *            chunk index
-	 * @param amount
-	 *            amount between 0 and 100 (percent)
+	 * @param index chunk index
+	 * @param amount amount between 0 and 100 (percent)
 	 */
 	public final void updateProgress(final int index, final int amount) {
 		final int lowerBound = 0;
@@ -156,14 +153,12 @@ public final class ProgressPanel extends JPanel {
 	/**
 	 * Create a JProgressBar instance.
 	 * 
-	 * @param barList
-	 *            List to store the JProgressBars in
-	 * @param numBars
-	 *            Number of progress bars to create
-	 * @param description
-	 *            String to display
+	 * @param barList List to store the JProgressBars in
+	 * @param numBars Number of progress bars to create
+	 * @param description String to display
 	 */
-	private final void createProgressBar(final ArrayList<JProgressBar> barList, final int numBars, final String description) {
+	private final void createProgressBar(final ArrayList<JProgressBar> barList, final int numBars,
+			final String description) {
 
 		// create the container layout
 		final JPanel cardPanel = new JPanel();

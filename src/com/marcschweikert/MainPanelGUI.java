@@ -22,8 +22,7 @@ public final class MainPanelGUI {
 	private final JPanel mainPanel = new JPanel();
 
 	/**
-	 * Specify the look and feel to use. Valid values: null (use the default),
-	 * "Metal", "System", "Motif", "GTK+"
+	 * Specify the look and feel to use. Valid values: null (use the default), "Metal", "System", "Motif", "GTK+"
 	 */
 	private static final String LOOKANDFEEL = "Metal";
 
