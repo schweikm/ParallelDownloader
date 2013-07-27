@@ -19,37 +19,37 @@ import javax.swing.SwingConstants;
  */
 public final class ConfigurationPanel extends JPanel implements ActionListener {
 
-	/** Unique serialization ID */
+	/** Unique serialization ID. */
 	private static final long serialVersionUID = 7755865066385083534L;
 
-	/** Singleton instance */
+	/** Singleton instance. */
 	private static ConfigurationPanel instance;
 
-	/** URL Text Field */
+	/** URL Text Field. */
 	private final JTextField myURLTextField = new JTextField();
 
-	/** File chooser */
+	/** File chooser. */
 	private final FileChooserField myDestinationFileChooser = new FileChooserField();
 
-	/** Number of download chunks drop-down */
+	/** Number of download chunks drop-down. */
 	private final JComboBox<Integer> myChunkComboBox = new JComboBox<Integer>();
 
-	/** Status message */
+	/** Status message. */
 	private final JTextField myStatusTextField = new JTextField();
 
-	/** Download button */
+	/** Download button. */
 	private final JButton myDownloadButton = new JButton("Download");
 
-	/** Action command for Download button */
+	/** Action command for Download button. */
 	private static final String ACTION_DOWNLOAD = "action_download";
 
-	/** Action command for chunk box drop-down */
+	/** Action command for chunk box drop-down. */
 	private static final String ACTION_NUMCHUNKS = "action_numChunks";
 
 	/**
-	 * @return Singleton instance
+	 * @return Singleton instance.
 	 */
-	public static final ConfigurationPanel getInstance() {
+	public static ConfigurationPanel getInstance() {
 		if (null == instance) {
 			instance = new ConfigurationPanel();
 		}
@@ -57,7 +57,7 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 	}
 
 	@Override
-	public final void actionPerformed(final ActionEvent event) {
+	public void actionPerformed(final ActionEvent event) {
 		// Download button
 		if (event.getActionCommand().equals(ACTION_DOWNLOAD)) {
 			// let's make sure we have all of the input we need
@@ -119,7 +119,7 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 	 * @param message
 	 *            Message to display on status field
 	 */
-	private final void updateStatusMessageLater(final String message) {
+	private void updateStatusMessageLater(final String message) {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -139,7 +139,7 @@ public final class ConfigurationPanel extends JPanel implements ActionListener {
 	/**
 	 * Add the components to the JPanel.
 	 */
-	private final void addComponentsToPanel() {
+	private void addComponentsToPanel() {
 		//
 		// URL FIELD
 		//
